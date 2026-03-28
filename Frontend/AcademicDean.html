@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusResolve | Dean Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-oatmeal: #F2EFE9;
+            --text-charcoal: #2D2926;
+            --accent-terracotta: #D96C4A;
+            --border-thin: 1px solid #2D2926;
+            --card-white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-oatmeal); 
+            color: var(--text-charcoal); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* --- Sidebar (Refashioned to 'Human' Style) --- */
+        .sidebar { 
+            width: 260px; 
+            background: var(--bg-oatmeal); 
+            border-right: var(--border-thin);
+            display: flex; 
+            flex-direction: column; 
+            padding: 40px 0; 
+        }
+        
+        .sidebar-header { 
+            padding: 0 30px 40px; 
+        }
+        
+        .brand-name { 
+            font-family: sans-serif;
+            font-weight: 600; 
+            font-size: 24px; 
+            color: var(--accent-terracotta); 
+        }
+        
+        .designation { 
+            font-size: 12px; 
+            color: #8C867E; 
+            font-weight: 500; 
+            margin-top: 4px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+        }
+
+        .nav-item { 
+            padding: 16px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .nav-item:hover { background: rgba(217, 108, 74, 0.05); }
+        
+        .nav-item.active { 
+            background: var(--text-charcoal); 
+            color: var(--bg-oatmeal); 
+        }
+
+        .count-badge { 
+            background: var(--accent-terracotta); 
+            color: white; 
+            font-size: 11px; 
+            padding: 2px 8px; 
+            border-radius: 20px; 
+        }
+
+        /* --- Main Content --- */
+        .main-container { flex: 1; display: flex; flex-direction: column; background: white; }
+        
+        header { 
+            height: 80px; 
+            border-bottom: var(--border-thin); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 40px;
+            background: var(--card-white);
+        }
+
+        .workspace { display: flex; flex: 1; overflow: hidden; }
+        
+        /* --- Inbox List --- */
+        .inbox-list { 
+            width: 380px; 
+            border-right: var(--border-thin); 
+            overflow-y: auto; 
+            background: #fff; 
+        }
+        
+        .complaint-preview { 
+            padding: 25px 30px; 
+            border-bottom: 1px solid #EEE; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        
+        .complaint-preview:hover { background: #FAF9F7; }
+        
+        .complaint-preview.selected { 
+            background: var(--bg-oatmeal); 
+            border-left: 6px solid var(--accent-terracotta); 
+        }
+        
+        .student-name { font-family: sans-serif; font-weight: 800; font-size: 18px; }
+        .time { font-size: 12px; color: #8C867E; }
+        .subject { font-size: 14px; font-weight: 600; margin: 8px 0 4px; }
+        .snippet { font-size: 13px; color: #666; line-height: 1.4; }
+
+        /* --- Reading Pane --- */
+        .reading-pane { flex: 1; padding: 60px; background: #fff; overflow-y: auto; }
+        
+        .ticket-id { 
+            font-size: 12px; 
+            color: var(--accent-terracotta); 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            margin-bottom: 15px; 
+            display: block;
+        }
+
+        .reading-pane h2 {
+            font-family: sans-serif;
+            font-size: 36px;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .action-bar { 
+            margin-top: 50px; 
+            display: flex; 
+            gap: 15px; 
+            padding-top: 30px; 
+            border-top: var(--border-thin); 
+        }
+
+        /* --- Buttons (Matching Login Page) --- */
+        .btn { 
+            padding: 14px 28px; 
+            border: var(--border-thin); 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-family: 'Outfit', sans-serif;
+            transition: 0.2s; 
+        }
+        
+        .btn-resolve { background: var(--text-charcoal); color: white; }
+        .btn-resolve:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); }
+        
+        .btn-ignore { background: transparent; color: var(--text-charcoal); }
+        .btn-ignore:hover { background: #F2EFE9; }
+
+        #statusToast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--text-charcoal); color: white; 
+            padding: 16px 32px; border-radius: 0; 
+            display: none; z-index: 100; font-size: 14px;
+            box-shadow: 10px 10px 0 var(--bg-oatmeal);
+            border: 1px solid white;
+        }
+
+        #empty-message {
+            font-family: sans-serif;
+            font-size: 20px;
+            color: #8C867E;
+            margin-top: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-name">CampusResolve</div>
+            <div class="designation">Academic Dean</div>
+        </div>
+        
+        <div class="nav-item active" id="nav-inbox" onclick="switchTab('inbox')">
+            <span>Current Inbox</span>
+            <span class="count-badge" id="mainCount">2</span>
+        </div>
+        <div class="nav-item" id="nav-resolved" onclick="switchTab('resolved')">
+            <span>Resolved Archive</span>
+        </div>
+    
+        <div class="nav-item" style="margin-top: auto;"><span>Internal Settings</span></div>
+    </div>
+
+    <div class="main-container">
+        <header>
+            <div style="font-weight: 600; font-size: 16px; letter-spacing: 1px;">
+                Portal | <span id="viewLabel" style="color: var(--accent-terracotta);">Inbox</span>
+            </div>
+            <button class="btn btn-ignore" style="padding: 8px 20px;" onclick="logout()">Sign Out</button>
+        </header>
+
+        <div class="workspace">
+            <div id="inbox-list-container" class="inbox-list">
+                <div class="complaint-preview selected" onclick="loadTicket(this, 'Wi-Fi Connection Issues', 'Tanush Saideep', 'The connection in Block B, Floor 3 is extremely unstable. It drops every 5 minutes during online lectures.', '#8829')"
+                    
+                    data-subject="Wi-Fi Connection Issues"
+                    data-name="Tanush Saideep"
+                    data-body="The connection in Block B, Floor 3 is extremely unstable. It drops every 5 minutes during online lectures. This has been happening for the last 3 days. Please check the router near Room 302."
+                    data-id="#8829">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="student-name">Tanush Saideep</span>
+                        <span class="time">10:45 AM</span>
+                    </div>
+                    <div class="subject">Wi-Fi Connection Issues</div>
+                    <div class="snippet">The connection in Block B is unstable...</div>
+                </div>
+
+                <div class="complaint-preview" onclick="loadTicket(this, 'Library AC Repair', 'Rahul Sharma', 'The central AC unit in the library\'s second floor is making loud noises and leaking water.', '#8830')"
+                    
+                    data-subject="Library AC Repair"
+                    data-name="Rahul Sharma"
+                    data-body="The central AC unit in the library\'s second floor is making loud noises and leaking water."
+                    data-id="#8830">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="student-name">Rahul Sharma</span>
+                        <span class="time">Yesterday</span>
+                    </div>
+                    <div class="subject">Library AC Repair</div>
+                    <div class="snippet">The central AC unit is making loud...</div>
+                </div>
+            </div>
+
+            <div id="resolved-list-container" class="inbox-list" style="display:none;"></div>
+
+            <div class="reading-pane">
+                <div id="ticket-content">
+                    <span class="ticket-id" id="displayID">Case Ref: #8829</span>
+                    <h2 id="displaySubject">Wi-Fi Connection Issues</h2>
+                    <p id="displayMeta" style="color: #8C867E; margin-bottom: 40px; line-height: 1.6; font-size: 15px;">
+                        Filed by <b id="displayName" style="color: var(--text-charcoal);">Tanush Saideep</b><br>
+                        Department: Infrastructure & Information Technology
+                    </p>
+                    <p id="displayBody" style="line-height: 1.8; color: #444; font-size: 16px;">
+                        The connection in Block B, Floor 3 is extremely unstable. It drops every 5 minutes during online lectures. This has been happening for the last 3 days. Please check the router near Room 302.
+                    </p>
+                    
+                    <div class="action-bar" id="actionBar">
+                        <button class="btn btn-resolve" onclick="resolveTicket()">Mark As Resolved</button>
+                        <button class="btn btn-ignore" onclick="ignoreTicket()">Dismiss Case</button>
+                    </div>
+                </div>
+
+                <div id="empty-message" style="display:none;">
+                    <p>Select a case file to review details.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusToast">Action completed successfully.</div>
+
+    <script>
+        let currentComplaintId = null;
+        
+        const resolved = document.getElementById("resolved-list-container");
+        
+        // =========================
+        // 🔥 LOAD COMPLAINTS FROM BACKEND
+        // =========================
+        async function loadAdminComplaints() {
+            const role = localStorage.getItem("adminRole");
+            const inbox = document.getElementById("inbox-list-container");
+        
+            inbox.innerHTML = "";
+        
+            try {
+                const res = await fetch(`http://127.0.0.1:8001/admin-complaints/${role}`);
+                const data = await res.json();
+        
+                data.forEach(c => {
+                    const div = document.createElement("div");
+                    div.className = "complaint-preview";
+        
+                    div.onclick = () => loadTicket(
+                        div,
+                        c.category,
+                        c.student,
+                        c.complaint,
+                        c.id,
+                        c.letter
+                    );
+        
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="student-name">${c.student}</span>
+                            <span class="time">Now</span>
+                        </div>
+                        <div class="subject">${c.category}</div>
+                        <div class="snippet">${c.complaint}</div>
+                    `;
+        
+                    if (c.status === "Resolved") {
+                        resolved.appendChild(div);
+                    } else {
+                        inbox.appendChild(div);
+                    }
+                });
+        
+                updateCounter();
+                checkEmptyState();
+        
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // =========================
+        // 📂 TAB SWITCH
+        // =========================
+        function switchTab(tab) {
+            const inbox = document.getElementById('inbox-list-container');
+            const resolved = document.getElementById('resolved-list-container');
+            const actionBar = document.getElementById('actionBar');
+            const label = document.getElementById('viewLabel');
+        
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (window.event) window.event.currentTarget.classList.add('active');
+        
+            if (tab === 'inbox') {
+                inbox.style.display = 'block';
+                resolved.style.display = 'none';
+                actionBar.style.display = 'flex';
+                label.innerText = 'Inbox';
+            } else {
+                inbox.style.display = 'none';
+                resolved.style.display = 'block';
+                actionBar.style.display = 'none';
+                label.innerText = 'Resolved';
+            }
+        
+            checkEmptyState();
+        }
+        
+        // =========================
+        // 📄 LOAD TICKET
+        // =========================
+        function loadTicket(el, subject, name, body, id, letter) {
+            currentComplaintId = id;
+        
+            document.getElementById('ticket-content').style.display = 'block';
+            document.getElementById('empty-message').style.display = 'none';
+        
+            document.querySelectorAll('.complaint-preview').forEach(pc => pc.classList.remove('selected'));
+            el.classList.add('selected');
+        
+            document.getElementById('displaySubject').innerText = subject;
+            document.getElementById('displayName').innerText = name;
+        
+            document.getElementById('displayBody').innerHTML = `
+                ${body}
+        
+                <div style="
+                    margin-top:25px;
+                    padding:20px;
+                    background:#FAF9F7;
+                    border:1px solid #2D2926;
+                    font-size:14px;
+                    line-height:1.6;
+                ">
+                    <b>📄 AI Generated Letter:</b><br><br>
+                    ${letter ? letter.replace(/\n/g, "<br>") : "No letter available"}
+                </div>
+            `;
+        
+            document.getElementById('displayID').innerText = `Case Ref: ${id}`;
+        }
+        
+        // =========================
+        // ✅ RESOLVE
+        // =========================
+        async function resolveTicket() {
+            if (!currentComplaintId) {
+                alert("Select ticket");
+                return;
+            }
+        
+            try {
+                await fetch(`http://127.0.0.1:8001/update-status/${currentComplaintId}`, {
+                    method: "PUT"
+                });
+        
+                showToast("Case marked as Resolved ✔");
+        
+                loadAdminComplaints();
+                switchTab('resolved');
+        
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // =========================
+        // ❌ IGNORE
+        // =========================
+        function ignoreTicket() {
+            const selected = document.querySelector('#inbox-list-container .selected');
+        
+            if (!selected) {
+                alert("Select ticket first");
+                return;
+            }
+        
+            selected.remove();
+            updateCounter();
+            showToast("Case dismissed");
+            checkEmptyState();
+        }
+        
+        // =========================
+        // 🔢 COUNTER
+        // =========================
+        function updateCounter() {
+            const badge = document.getElementById('mainCount');
+            const count = document.querySelectorAll('#inbox-list-container .complaint-preview').length;
+        
+            badge.innerText = count;
+            badge.style.display = count === 0 ? 'none' : 'block';
+        }
+        
+        // =========================
+        // 📭 EMPTY STATE
+        // =========================
+        function checkEmptyState() {
+            const label = document.getElementById('viewLabel').innerText;
+            const containerId = (label === 'Inbox') ? 'inbox-list-container' : 'resolved-list-container';
+        
+            const items = document.querySelectorAll(`#${containerId} .complaint-preview`);
+        
+            if (items.length === 0) {
+                document.getElementById('ticket-content').style.display = 'none';
+                document.getElementById('empty-message').style.display = 'block';
+            }
+        }
+        
+        // =========================
+        // 🔔 TOAST
+        // =========================
+        function showToast(msg) {
+            const toast = document.getElementById('statusToast');
+        
+            toast.innerText = msg;
+            toast.style.display = 'block';
+        
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+        
+        // =========================
+        // 🚪 LOGOUT
+        // =========================
+        function logout() {
+            if (confirm("Sign out?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+        
+        // =========================
+        // 🚀 INIT
+        // =========================
+        loadAdminComplaints();
+        </script>
+</body>
+</html>

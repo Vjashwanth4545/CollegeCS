@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusResolve | Submit Complaint</title>
+    
+    <style>
+        :root {
+            --bg-oatmeal: #F2EFE9;
+            --text-charcoal: #2D2926;
+            --accent-terracotta: #D96C4A;
+            --border-thin: 1px solid #2D2926;
+            --card-white: #FFFFFF;
+        }
+
+        /* Set all text to Sans-Serif */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-oatmeal);
+            color: var(--text-charcoal);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            background: var(--bg-oatmeal);
+            border-bottom: var(--border-thin);
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--accent-terracotta);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .user-profile { display: flex; align-items: center; gap: 20px; }
+
+        .logout-btn {
+            padding: 8px 20px;
+            border: var(--border-thin);
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover { 
+            background: var(--text-charcoal); 
+            color: var(--bg-oatmeal); 
+        }
+
+        /* --- Main Content --- */
+        main {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .hero-section {
+            margin-bottom: 40px;
+        }
+
+        .hero-section h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .hero-section p { color: #8C867E; font-size: 16px; }
+
+        /* --- Input Area --- */
+        .input-container {
+            background: var(--card-white);
+            padding: 40px;
+            border: var(--border-thin);
+            box-shadow: 15px 15px 0px #E5E1D8;
+            margin-bottom: 60px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 16px;
+            border: var(--border-thin);
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+            outline: none;
+            background: #FAF9F7;
+        }
+
+        textarea:focus {
+            background: white;
+            box-shadow: inset 4px 0 0 var(--accent-terracotta);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--text-charcoal);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover { background: var(--accent-terracotta); }
+
+        /* --- History List --- */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 10px;
+            border-bottom: var(--border-thin);
+        }
+
+        .history-header h2 { font-size: 18px; font-weight: 700; }
+
+        .complaint-card {
+            background: var(--card-white);
+            border: var(--border-thin);
+            padding: 25px;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .status-tag {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border: 1px solid var(--text-charcoal);
+        }
+
+        .status-pending { background: #FAF9F7; color: var(--text-charcoal); }
+        .status-resolved { background: var(--text-charcoal); color: white; }
+
+        .complaint-text { font-size: 16px; font-weight: 500; color: var(--text-charcoal); }
+        .complaint-meta { font-size: 12px; color: #8C867E; font-weight: 500; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">CampusResolve</a>
+        <div class="user-profile">
+            <span style="font-weight: 600; font-size: 14px;">Tanush Saideep</span>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <h1>Submit a Case</h1>
+            <p>Report issues directly to the administrative hub.</p>
+        </section>
+
+        <div class="input-container">
+            <label for="complaintText">Case Details</label>
+            <textarea id="complaintText" placeholder="Describe the issue (e.g., Location, time, and specifics)..."></textarea>
+            <button class="submit-btn" onclick="addComplaint()">File Complaint</button>
+        </div>
+
+        <div class="history-header">
+            <h2>Your Case History</h2>
+            <span id="count" style="color: #8C867E; font-size: 13px; font-weight: 600;">2 total</span>
+        </div>
+
+        <div id="complaintHistory">
+            <div class="complaint-card">
+                <div class="card-top">
+                    <span class="status-tag status-pending">Pending</span>
+                    <span class="complaint-meta">2 days ago</span>
+                </div>
+                <p class="complaint-text">Exam paper re-evaluation request for Mathematics mid-term.</p>
+            </div>
+
+            <div class="complaint-card">
+                <div class="card-top">
+                    <span class="status-tag status-resolved">Resolved</span>
+                    <span class="complaint-meta">1 week ago</span>
+                </div>
+                <p class="complaint-text">Water supply issue in Block C showers.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+        
+        // ==========================
+        // 🚀 SUBMIT COMPLAINT (API)
+        // ==========================
+        async function addComplaint() {
+            const textArea = document.getElementById('complaintText');
+            const text = textArea.value.trim();
+            const studentId = localStorage.getItem("studentId");
+        
+            if (!text) {
+                alert("Please enter a complaint before submitting.");
+                return;
+            }
+        
+            try {
+                const res = await fetch("http://127.0.0.1:8001/complaint", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        text: text
+                    })
+                });
+        
+                const data = await res.json();
+                console.log(data);
+        
+                textArea.value = "";
+        
+                // reload complaints from DB
+                loadComplaints();
+        
+            } catch (err) {
+                console.error(err);
+                alert("Error submitting complaint");
+            }
+        }
+        
+        // ==========================
+        // 📥 LOAD COMPLAINT HISTORY
+        // ==========================
+        async function loadComplaints() {
+            const studentId = localStorage.getItem("studentId");
+            const history = document.getElementById("complaintHistory");
+            const countLabel = document.getElementById("count");
+        
+            history.innerHTML = "";
+        
+            try {
+                const res = await fetch(`http://127.0.0.1:8001/complaints/${studentId}`);
+                const data = await res.json();
+        
+                data.reverse().forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = 'complaint-card';
+        
+                    const statusClass = c.status === "Resolved"
+                        ? "status-resolved"
+                        : "status-pending";
+        
+                    card.innerHTML = `
+                        <div class="card-top">
+                            <span class="status-tag ${statusClass}">
+                                ${c.status}
+                            </span>
+                            <span class="complaint-meta">
+                                ${c.category || "General"}
+                            </span>
+                        </div>
+                        <p class="complaint-text">${c.complaint}</p>
+                    `;
+        
+                    history.appendChild(card);
+                });
+        
+                countLabel.innerText = data.length + " total";
+        
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // ==========================
+        // 👤 LOAD USER NAME
+        // ==========================
+        async function loadUser() {
+            const studentId = localStorage.getItem("studentId");
+        
+            if (!studentId) {
+                alert("Not logged in");
+                window.location.href = "index.html";
+                return;
+            }
+        
+            try {
+                const res = await fetch(`http://127.0.0.1:8001/student/${studentId}`);
+                const data = await res.json();
+        
+                document.querySelector(".user-profile span").innerText =
+                    data.name || "Unknown";
+        
+            } catch (err) {
+                console.error(err);
+                document.querySelector(".user-profile span").innerText = "Error";
+            }
+        }
+        
+        // ==========================
+        // 🔥 INIT
+        // ==========================
+        loadUser();
+        loadComplaints();
+        </script>
+</body>
+</html>

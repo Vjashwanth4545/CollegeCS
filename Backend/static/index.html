@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complaint System</title>
+</head>
+<body>
+
+    <h2>Student Complaint System</h2>
+
+    <input type="text" id="complaint" placeholder="Enter your complaint" size="50">
+    <button onclick="sendComplaint()">Submit</button>
+
+    <h3>Result:</h3>
+    <pre id="result"></pre>
+
+    <script>
+        async function sendComplaint() {
+            const text = document.getElementById("complaint").value;
+        
+            if (!text.trim()) {
+                alert("Enter complaint");
+                return;
+            }
+        
+            try {
+                const response = await fetch("http://127.0.0.1:8001/complaint", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        student_id: "S001",
+                        text: text
+                    })
+                });
+        
+                const data = await response.json();
+        
+                // 🔥 Display nicely
+                document.getElementById("result").innerText = `
+        ✅ Complaint Submitted
+        
+        🆔 ID: ${data.data.id}
+        📂 Category: ${data.data.category}
+        📌 Status: ${data.data.status}
+        👤 Assigned To: ${data.data.assigned_to}
+        
+        📝 Complaint:
+        "${data.data.complaint}"
+        
+        -------------------------------------
+        
+        📄 Generated Letter:
+        ${data.data.response ? data.data.response : ""}
+        
+        ${data.data.letter ? data.data.letter : ""}
+        `;
+        
+            } catch (err) {
+                console.error(err);
+                document.getElementById("result").innerText = "Error connecting to server";
+            }
+        }
+        </script>
+
+</body>
+</html>

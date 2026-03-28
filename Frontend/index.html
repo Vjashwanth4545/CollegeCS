@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusResolve | Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #F2EFE9; /* Oatmeal/Paper color */
+  color: #2D2926;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+/* Header Section */
+.header-box {
+  margin-bottom: 40px;
+}
+
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: #D96C4A; /* Terracotta Accent */
+  margin-bottom: 4px;
+}
+
+.brand-sub {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #8C867E;
+}
+
+/* The Card */
+.auth-card {
+  background: #FFF;
+  padding: 40px;
+  border-radius: 2px; /* Sharp, architectural edges feel more 'designed' */
+  box-shadow: 20px 20px 0px #E5E1D8; /* Offset flat shadow */
+  border: 1px solid #2D2926;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  margin-bottom: 24px;
+  line-height: 1;
+}
+
+/* Toggle Switch */
+.toggle-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.toggle-wrapper button {
+  padding: 12px;
+  border: 1px solid #2D2926;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.toggle-wrapper button.active {
+  background: #2D2926;
+  color: #F2EFE9;
+}
+
+/* Shared Dimensions for Perfection */
+.field-height {
+  height: 52px; /* Forced identical height */
+  width: 100%;
+  padding: 0 16px;
+  font-size: 15px;
+  font-family: 'Outfit', sans-serif;
+  border: 1px solid #2D2926;
+  background: #FFF;
+  border-radius: 0;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* Fix for Select alignment */
+select.field-height {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232D2926' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  cursor: pointer;
+}
+
+input:focus, select:focus {
+  outline: none;
+  background-color: #FAF9F7;
+  box-shadow: inset 4px 0 0 #D96C4A;
+}
+
+/* Submit Button */
+.btn-submit {
+  height: 52px;
+  width: 100%;
+  background: #2D2926;
+  color: #FFF;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background: #D96C4A;
+}
+
+.hidden { display: none; }
+
+/* Management Specific Style */
+.mgmt-note {
+  font-size: 12px;
+  color: #8C867E;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="header-box">
+    <div class="logo">ComplaintSolver.</div>
+    <div class="brand-sub">University Portal</div>
+  </div>
+
+  <div class="auth-card">
+    <h1 id="title">Welcome</h1>
+    
+    <div class="toggle-wrapper">
+      <button id="studentBtn" class="active">Student</button>
+      <button id="managementBtn">Management</button>
+    </div>
+
+    <div id="studentForm">
+      <input id="s-email" class="field-height" type="email" placeholder="Student Username" required>
+      <input id="s-pass" class="field-height" type="password" placeholder="Password" required>
+      <button class="btn-submit" onclick="login('student')">Enter Portal</button>
+    </div>
+
+    <div id="managementSection" class="hidden">
+      <p class="mgmt-note">ADMINISTRATIVE ACCESS</p>
+      <select id="adminRole" class="field-height">
+        <option value="" disabled selected>Choose Department</option>
+        <option value="dean">Academic Dean</option>
+        <option value="warden">Hostel Warden</option>
+        <option value="it_head">Campus Administrator</option>
+        <option value="security">Disciplinary Manager</option>
+      </select>
+      <input id="m-pass" class="field-height" type="password" placeholder="Admin Password" required>
+      <button class="btn-submit" onclick="login('management')">Verify Identity</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const studentBtn = document.getElementById("studentBtn");
+const managementBtn = document.getElementById("managementBtn");
+const studentForm = document.getElementById("studentForm");
+const managementSection = document.getElementById("managementSection");
+const title = document.getElementById("title");
+
+// Toggle
+studentBtn.onclick = () => {
+  studentBtn.classList.add("active");
+  managementBtn.classList.remove("active");
+  studentForm.classList.remove("hidden");
+  managementSection.classList.add("hidden");
+  title.innerText = "Welcome";
+};
+
+managementBtn.onclick = () => {
+  managementBtn.classList.add("active");
+  studentBtn.classList.remove("active");
+  studentForm.classList.add("hidden");
+  managementSection.classList.remove("hidden");
+  title.innerText = "Staff Login";
+};
+
+// 🔥 FINAL LOGIN FUNCTION
+async function login(role) {
+
+  // =========================
+  // 🎓 STUDENT LOGIN
+  // =========================
+  if (role === 'student') {
+
+    const username = document.getElementById('s-email').value;
+    const pass = document.getElementById('s-pass').value;
+
+    if (!username || !pass) {
+      alert("Required fields are missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://127.0.0.1:8001/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: username,
+          password: pass
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // ✅ store
+        localStorage.setItem("studentId", data.student_id);
+        localStorage.setItem("studentName", data.name);
+
+        // ✅ redirect
+        window.location.href = "Student.html";
+      } else {
+        alert(data.message || "Invalid credentials");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Server error. Backend not running.");
+    }
+  }
+
+  // =========================
+  // 🧑‍💼 MANAGEMENT LOGIN
+  // =========================
+  else {
+
+    const roleSelect = document.getElementById('adminRole').value;
+    const pass = document.getElementById('m-pass').value;
+
+    if (!roleSelect || !pass) {
+      alert("Select a department and enter password.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://127.0.0.1:8001/admin-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          role: roleSelect,
+          password: pass
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+
+        localStorage.setItem("adminRole", roleSelect);
+
+        // 🔥 redirect based on role
+        switch (roleSelect) {
+          case 'dean':
+            window.location.href = "AcademicDean.html";
+            break;
+          case 'warden':
+            window.location.href = "HostelWarden.html";
+            break;
+          case 'it_head':
+            window.location.href = "CampusAdmin.html";
+            break;
+          case 'security':
+            window.location.href = "DisciplanaryManager.html";
+            break;
+        }
+
+      } else {
+        alert("Invalid admin credentials");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusResolve | Disciplinary Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-oatmeal: #F2EFE9;
+            --text-charcoal: #2D2926;
+            --accent-terracotta: #D96C4A;
+            --border-thin: 1px solid #2D2926;
+            --card-white: #FFFFFF;
+        }
+
+        /* Set all text to sans-serif as requested */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif !important; }
+        
+        body { 
+            font-family: sans-serif; 
+            background: var(--bg-oatmeal); 
+            color: var(--text-charcoal); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* --- Sidebar (Refashioned to 'Human' Style) --- */
+        .sidebar { 
+            width: 260px; 
+            background: var(--bg-oatmeal); 
+            border-right: var(--border-thin);
+            display: flex; 
+            flex-direction: column; 
+            padding: 40px 0; 
+        }
+        
+        .sidebar-header { 
+            padding: 0 30px 40px; 
+        }
+        
+        .brand-name { 
+            font-family: sans-serif;
+            font-weight: 600; 
+            font-size: 24px; 
+            color: var(--accent-terracotta); 
+        }
+        
+        .designation { 
+            font-size: 12px; 
+            color: #8C867E; 
+            font-weight: 500; 
+            margin-top: 4px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+        }
+
+        .nav-item { 
+            padding: 16px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .nav-item:hover { background: rgba(217, 108, 74, 0.05); }
+        
+        .nav-item.active { 
+            background: var(--text-charcoal); 
+            color: var(--bg-oatmeal); 
+        }
+
+        .count-badge { 
+            background: var(--accent-terracotta); 
+            color: white; 
+            font-size: 11px; 
+            padding: 2px 8px; 
+            border-radius: 20px; 
+        }
+
+        /* --- Main Content --- */
+        .main-container { flex: 1; display: flex; flex-direction: column; background: white; }
+        
+        header { 
+            height: 80px; 
+            border-bottom: var(--border-thin); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 40px;
+            background: var(--card-white);
+        }
+
+        .workspace { display: flex; flex: 1; overflow: hidden; }
+        
+        /* --- Inbox List --- */
+        .inbox-list { 
+            width: 380px; 
+            border-right: var(--border-thin); 
+            overflow-y: auto; 
+            background: #fff; 
+        }
+        
+        .complaint-preview { 
+            padding: 25px 30px; 
+            border-bottom: 1px solid #EEE; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        
+        .complaint-preview:hover { background: #FAF9F7; }
+        
+        .complaint-preview.selected { 
+            background: var(--bg-oatmeal); 
+            border-left: 6px solid var(--accent-terracotta); 
+        }
+        
+        .student-name { font-family: sans-serif; font-weight: 800; font-size: 18px; }
+        .time { font-size: 12px; color: #8C867E; }
+        .subject { font-size: 14px; font-weight: 600; margin: 8px 0 4px; }
+        .snippet { font-size: 13px; color: #666; line-height: 1.4; }
+
+        /* --- Reading Pane --- */
+        .reading-pane { flex: 1; padding: 60px; background: #fff; overflow-y: auto; }
+        
+        .ticket-id { 
+            font-size: 12px; 
+            color: var(--accent-terracotta); 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            margin-bottom: 15px; 
+            display: block;
+        }
+
+        .reading-pane h2 {
+            font-family: sans-serif;
+            font-size: 36px;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .action-bar { 
+            margin-top: 50px; 
+            display: flex; 
+            gap: 15px; 
+            padding-top: 30px; 
+            border-top: var(--border-thin); 
+        }
+
+        /* --- Buttons (Matching Login Page) --- */
+        .btn { 
+            padding: 14px 28px; 
+            border: var(--border-thin); 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-family: sans-serif;
+            transition: 0.2s; 
+        }
+        
+        .btn-resolve { background: var(--text-charcoal); color: white; }
+        .btn-resolve:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); }
+        
+        .btn-ignore { background: transparent; color: var(--text-charcoal); }
+        .btn-ignore:hover { background: #F2EFE9; }
+
+        #statusToast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--text-charcoal); color: white; 
+            padding: 16px 32px; border-radius: 0; 
+            display: none; z-index: 100; font-size: 14px;
+            box-shadow: 10px 10px 0 var(--bg-oatmeal);
+            border: 1px solid white;
+        }
+
+        #empty-message {
+            font-family: sans-serif;
+            font-size: 20px;
+            color: #8C867E;
+            margin-top: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-name">CampusResolve</div>
+            <div class="designation">Disciplinary Manager</div>
+        </div>
+        
+        <div class="nav-item active" id="nav-inbox" onclick="switchTab('inbox')">
+            <span>Current Inbox</span>
+            <span class="count-badge" id="mainCount">2</span>
+        </div>
+        <div class="nav-item" id="nav-resolved" onclick="switchTab('resolved')">
+            <span>Resolved Archive</span>
+        </div>
+    
+        <div class="nav-item" style="margin-top: auto;"><span>Internal Settings</span></div>
+    </div>
+
+    <div class="main-container">
+        <header>
+            <div style="font-weight: 600; font-size: 16px; letter-spacing: 1px;">
+                Portal | <span id="viewLabel" style="color: var(--accent-terracotta);">Inbox</span>
+            </div>
+            <button class="btn btn-ignore" style="padding: 8px 20px;" onclick="logout()">Sign Out</button>
+        </header>
+
+        <div class="workspace">
+            <div id="inbox-list-container" class="inbox-list">
+                <div class="complaint-preview selected" onclick="loadTicket(this, 'Academic Misconduct Report', 'Prof. Sarah Jenkins', 'A student was found using unauthorized materials during the Mid-Term Examination in Room 104.', '#DISC-901')"
+                    
+                    data-subject="Academic Misconduct Report"
+                    data-name="Prof. Sarah Jenkins"
+                    data-body="During the Semester 2 Mid-Term Examination, student ID 2024-ENG-08 was observed using a mobile device hidden under the desk. The invigilator has seized the device and the answer sheet. Formal inquiry required."
+                    data-id="#DISC-901">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="student-name">Prof. Sarah Jenkins</span>
+                        <span class="time">02:30 PM</span>
+                    </div>
+                    <div class="subject">Academic Misconduct Report</div>
+                    <div class="snippet">A student was found using unauthorized...</div>
+                </div>
+
+                <div class="complaint-preview" onclick="loadTicket(this, 'Damage to Lab Equipment', 'Tech Team', 'Intentional damage reported to three computer monitors in the CS lab during the night shift.', '#DISC-902')"
+                    
+                    data-subject="Damage to Lab Equipment"
+                    data-name="Tech Team"
+                    data-body="Intentional damage reported to three computer monitors in the CS lab during the night shift. Security footage is being reviewed to identify the individuals involved. Repair or replacement costs to be billed to responsible parties."
+                    data-id="#DISC-902">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="student-name">Tech Team</span>
+                        <span class="time">Yesterday</span>
+                    </div>
+                    <div class="subject">Damage to Lab Equipment</div>
+                    <div class="snippet">Intentional damage reported to three...</div>
+                </div>
+            </div>
+
+            <div id="resolved-list-container" class="inbox-list" style="display:none;"></div>
+
+            <div class="reading-pane">
+                <div id="ticket-content">
+                    <span class="ticket-id" id="displayID">Case Ref: #DISC-901</span>
+                    <h2 id="displaySubject">Academic Misconduct Report</h2>
+                    <p id="displayMeta" style="color: #8C867E; margin-bottom: 40px; line-height: 1.6; font-size: 15px;">
+                        Filed by <b id="displayName" style="color: var(--text-charcoal);">Prof. Sarah Jenkins</b><br>
+                        Category: Academic Dishonesty & Ethics
+                    </p>
+                    <p id="displayBody" style="line-height: 1.8; color: #444; font-size: 16px;">
+                        During the Semester 2 Mid-Term Examination, student ID 2024-ENG-08 was observed using a mobile device hidden under the desk. The invigilator has seized the device and the answer sheet. Formal inquiry required.
+                    </p>
+                    
+                    <div class="action-bar" id="actionBar">
+                        <button class="btn btn-resolve" onclick="resolveTicket()">Mark As Resolved</button>
+                        <button class="btn btn-ignore" onclick="ignoreTicket()">Dismiss Case</button>
+                    </div>
+                </div>
+
+                <div id="empty-message" style="display:none;">
+                    <p>Select a case file to review details.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusToast">Action completed successfully.</div>
+
+    <script>
+        let currentComplaintId = null;
+        
+        const inbox = document.getElementById("inbox-list-container");
+        const resolved = document.getElementById("resolved-list-container");
+        
+        // =========================
+        // 🔥 LOAD FROM BACKEND
+        // =========================
+        async function loadAdminComplaints() {
+            const role = "security"; // 🔥 disciplinary manager = security
+        
+            inbox.innerHTML = "";
+            resolved.innerHTML = "";
+        
+            try {
+                const res = await fetch(`http://127.0.0.1:8001/admin-complaints/${role}`);
+                const data = await res.json();
+        
+                data.forEach(c => {
+                    const div = document.createElement("div");
+                    div.className = "complaint-preview";
+        
+                    div.onclick = () => loadTicket(
+                        div,
+                        c.category,
+                        c.student,
+                        c.complaint,
+                        c.id,
+                        c.letter
+                    );
+        
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="student-name">${c.student}</span>
+                            <span class="time">Now</span>
+                        </div>
+                        <div class="subject">${c.category}</div>
+                        <div class="snippet">${c.complaint}</div>
+                    `;
+        
+                    if (c.status === "Resolved") {
+                        resolved.appendChild(div);
+                    } else {
+                        inbox.appendChild(div);
+                    }
+                });
+        
+                updateCounter();
+                checkEmptyState();
+        
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // =========================
+        // 📂 SWITCH TAB
+        // =========================
+        function switchTab(tab) {
+            const actionBar = document.getElementById('actionBar');
+            const label = document.getElementById('viewLabel');
+        
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+            if (tab === 'inbox') {
+                document.getElementById('nav-inbox').classList.add('active');
+                inbox.style.display = 'block';
+                resolved.style.display = 'none';
+                actionBar.style.display = 'flex';
+                label.innerText = 'Inbox';
+            } else {
+                document.getElementById('nav-resolved').classList.add('active');
+                inbox.style.display = 'none';
+                resolved.style.display = 'block';
+                actionBar.style.display = 'none';
+                label.innerText = 'Resolved';
+            }
+        
+            checkEmptyState();
+        }
+        
+        // =========================
+        // 📄 LOAD TICKET
+        // =========================
+        function loadTicket(el, subject, name, body, id, letter) {
+            currentComplaintId = id;
+        
+            document.getElementById('ticket-content').style.display = 'block';
+            document.getElementById('empty-message').style.display = 'none';
+        
+            document.querySelectorAll('.complaint-preview').forEach(pc => pc.classList.remove('selected'));
+            el.classList.add('selected');
+        
+            document.getElementById('displaySubject').innerText = subject;
+            document.getElementById('displayName').innerText = name;
+        
+            document.getElementById('displayBody').innerHTML = `
+                ${body}
+        
+                <div style="
+                    margin-top:25px;
+                    padding:20px;
+                    background:#FAF9F7;
+                    border:1px solid #2D2926;
+                    font-size:14px;
+                    line-height:1.6;
+                ">
+                    <b>📄 Incident Report / AI Note:</b><br><br>
+                    ${letter ? letter.replace(/\n/g, "<br>") : "No additional report available"}
+                </div>
+            `;
+        
+            document.getElementById('displayID').innerText = `Case Ref: ${id}`;
+        }
+        
+        // =========================
+        // ✅ RESOLVE (API)
+        // =========================
+        async function resolveTicket() {
+            if (!currentComplaintId) {
+                alert("Select a case first");
+                return;
+            }
+        
+            try {
+                await fetch(`http://127.0.0.1:8001/update-status/${currentComplaintId}`, {
+                    method: "PUT"
+                });
+        
+                showToast("Case resolved ✔");
+        
+                loadAdminComplaints();
+                switchTab('resolved');
+        
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // =========================
+        // ❌ IGNORE
+        // =========================
+        function ignoreTicket() {
+            const selected = document.querySelector('#inbox-list-container .selected');
+        
+            if (!selected) {
+                alert("Select a case first");
+                return;
+            }
+        
+            selected.remove();
+            updateCounter();
+            showToast("Case dismissed");
+            checkEmptyState();
+        }
+        
+        // =========================
+        // 🔢 COUNTER
+        // =========================
+        function updateCounter() {
+            const badge = document.getElementById('mainCount');
+            const count = document.querySelectorAll('#inbox-list-container .complaint-preview').length;
+        
+            badge.innerText = count;
+            badge.style.display = count === 0 ? 'none' : 'block';
+        }
+        
+        // =========================
+        // 📭 EMPTY STATE
+        // =========================
+        function checkEmptyState() {
+            const label = document.getElementById('viewLabel').innerText;
+            const containerId = (label === 'Inbox') ? 'inbox-list-container' : 'resolved-list-container';
+        
+            const items = document.querySelectorAll(`#${containerId} .complaint-preview`);
+        
+            if (items.length === 0) {
+                document.getElementById('ticket-content').style.display = 'none';
+                document.getElementById('empty-message').style.display = 'block';
+            }
+        }
+        
+        // =========================
+        // 🔔 TOAST
+        // =========================
+        function showToast(msg) {
+            const toast = document.getElementById('statusToast');
+        
+            toast.innerText = msg;
+            toast.style.display = 'block';
+        
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+        
+        // =========================
+        // 🚪 LOGOUT
+        // =========================
+        function logout() {
+            if (confirm("Sign out?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+        
+        // =========================
+        // 🚀 INIT
+        // =========================
+        loadAdminComplaints();
+        </script>
+      
+</body>
+</html>
